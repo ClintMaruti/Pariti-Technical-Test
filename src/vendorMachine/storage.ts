@@ -37,4 +37,4 @@ export const vendorStorage: IVendorStorage = {
     coin: [],
 };
 
-export const usersStore: Array<IMaintainer> = [{ _id: uuidv4(), username: "Clint", password: "clint123" }];
+export const usersStore: Array<IMaintainer> = [{ _id: uuidv4(), username: "pariti", password: "$2a$10$Prpk2fnVSKoLpTSe53dB5OhtDSY5wvbg4pgAC.tRgOo4ooiKWBDxy" }];

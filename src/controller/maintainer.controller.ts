@@ -34,28 +34,37 @@ export const register = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
+export const login = async (req: Request, res: Response, next: NextFunction) => {
     const { username, password } = req.body;
-    const user = usersStore.find((user) => (user.username = username));
+
+    const user = usersStore.find((user) => {
+        return user.username === username;
+    });
+
     if (isEmpty(user)) {
         return res.status(401).json({ message: "User not found" });
-    } else {
-        bcryptjs.compare(password, user.password, (error, results) => {
-            if (error) {
-                log.info(NAMESPACE, error.message, error);
-                return res.status(401).json({ message: "User not found" });
-            } else if (results) {
-                signJWT(user, (_error, token) => {
-                    if (_error) {
-                        log.info(NAMESPACE, "Unable to sign token", error);
-                        return res.status(401).json({ message: "User not found" });
-                    } else if (token) {
-                        return res.status(200).json({ message: "Auth Succcessful!", token, user });
-                    }
-                });
-            }
-        });
     }
+
+    const validPassword = await bcryptjs.compare(password, user.password);
+    if (!validPassword) {
+        log.info(NAMESPACE, "Password Mismatch!");
+        return res.status(401).json({ message: "Password mismatch!" });
+    }
+    signJWT(user, (_error, token) => {
+        if (_error) {
+            log.info(NAMESPACE, "Unable to sign token");
+            return res.status(500).json({
+                message: _error.message,
+                error: _error,
+            });
+        } else if (token) {
+            return res.status(200).json({
+                message: "Auth successful",
+                token: token,
+                user,
+            });
+        }
+    });
 };
 
 export const getAllMaintainers = (req: Request, res: Response, next: NextFunction) => {

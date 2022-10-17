@@ -15,7 +15,7 @@ export default function (app: Express) {
     // add coins to the vending machine
     app.post("/api/coins/addCoins", extractJWT, addCoinsController);
     // update the coins available in the machine for each type of coin
-    app.post("/api/coins/updateCoins", updateCoinsController);
+    app.post("/api/coins/updateCoins", extractJWT, updateCoinsController);
     // Testing route to validate maintainer
     app.get("/api/maintainer/validate", extractJWT, validateToken);
     // Register new maintainer
